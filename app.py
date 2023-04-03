@@ -30,11 +30,26 @@ def users():
         return jsonify(data=data)
 
 
+@app.route("/login", methods=["POST"])
 def login():
-    pass
+    phone = request.json.get("phone")
+    password = request.json.get("password")
+    connection = database().connection(autocommit=False)
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM user where phone='{phone}' and password='{password}'")
+    user = cursor.fetchone()
+    connection.close()
+    if not user:
+        data = {'ok': False, 'data': {}}
+        return jsonify(data)
+    data = {'ok': True, 'data': {'id': user[0], 'name': user[1]}}
+
+    return jsonify(data)
 
 
+@app.route("/subjects")
 def get_subjects_by_type():
+    s_type = request.args.get("type", "single")
     pass
 
 
